@@ -126,3 +126,39 @@ def test_set_correct_choices_with_invalid_id():
 
     with pytest.raises(Exception):
         question.set_correct_choices(['invalid_id'])
+
+
+@pytest.fixture
+def question():
+    question = Question(title='q1')
+    
+    question.add_choice('a', False)
+    question.add_choice('b', False)
+    question.add_choice('c', False)
+    question.add_choice('d', False)
+    
+    return question
+
+def test_set_multiple_correct_choices(question):
+    choice1 = question.choices[0]
+    choice2 = question.choices[1]
+
+    question.set_correct_choices([choice1.id, choice2.id])
+    assert choice1.is_correct
+    assert choice2.is_correct
+    assert not question.choices[2].is_correct
+    assert not question.choices[3].is_correct
+
+def test_correct_selected_choices(question):
+    choice1 = question.choices[0]
+    choice2 = question.choices[1]
+
+    question.set_correct_choices([choice1.id])
+    assert question.correct_selected_choices([choice1.id]) == [choice1.id]
+
+def test_incorrect_selected_choices(question):
+    choice1 = question.choices[0]
+    choice2 = question.choices[1]
+
+    question.set_correct_choices([choice1.id])
+    assert question.correct_selected_choices([choice2.id]) == []
